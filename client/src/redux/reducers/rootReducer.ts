@@ -1,10 +1,10 @@
 import { combineEpics } from 'redux-observable';
 import {combineReducers} from 'redux'
 import mainReducer from './mainReducer'
-import { pingEpic } from '../actions/actions';
+import { fetchUserEpic } from '../actions/actions';
 
 export const rootEpic = combineEpics(
-  pingEpic,
+  fetchUserEpic,
 );
 
 export const rootReducer = combineReducers({
@@ -12,3 +12,4 @@ export const rootReducer = combineReducers({
 })
 
 export type AppState = ReturnType<typeof rootReducer>
+export type EpicState = ReturnType<typeof rootEpic>

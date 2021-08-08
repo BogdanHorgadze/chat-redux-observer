@@ -1,21 +1,25 @@
 import { ActionsTypes } from "../actions/actions"
+import { FETCH_USER_FULFILLED} from "../actions/actionTypes";
 
-interface IMain {
-  isPinging : boolean
+export type todo = {
+  value : string
 }
 
-const initialState = {
-  isPinging : false
+interface IMain {
+  todos : Array<todo>
+  user : any
+}
+
+const initialState : IMain = {
+  todos : [],
+  user : '' 
 }
 
 export default function mainReducer(state: IMain = initialState, action: ActionsTypes) {
   switch (action.type) {
-    case 'PING':
-      return { isPinging: true };
-
-    case 'PONG':
-      return { isPinging: false };
-
+      case FETCH_USER_FULFILLED:
+        return {...state, user : action.payload}
+      break;
     default:
       return state;
   }

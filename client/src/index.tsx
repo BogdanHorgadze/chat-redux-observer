@@ -11,6 +11,7 @@ import { rootEpic, rootReducer } from './redux/reducers/rootReducer';
 const epicMiddleware = createEpicMiddleware();
 
 const store = createStore(rootReducer,applyMiddleware(epicMiddleware))
+
 epicMiddleware.run(rootEpic);
 
 ReactDOM.render(
