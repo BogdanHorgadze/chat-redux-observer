@@ -1,5 +1,5 @@
 import { ActionsTypes } from "../actions/actions"
-import { FETCH_USER_FULFILLED} from "../actions/actionTypes";
+import { USER_ACTION_TYPES} from "../actions/actionTypes";
 
 export type todo = {
   value : string
@@ -17,7 +17,7 @@ const initialState : IMain = {
 
 export default function mainReducer(state: IMain = initialState, action: ActionsTypes) {
   switch (action.type) {
-      case FETCH_USER_FULFILLED:
+      case USER_ACTION_TYPES.FETCH_USER_FULFILLED:
         return {...state, user : action.payload}
       break;
     default:
