@@ -1,8 +1,9 @@
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {fetchUser} from './redux/actions/actions'
 import {useDispatch,useSelector} from 'react-redux'
 import { AppState } from "./redux/reducers/rootReducer";
+
 function App() {
   const dispatch = useDispatch()
   const me = useSelector((state:AppState) => state.mainReducer.user)
