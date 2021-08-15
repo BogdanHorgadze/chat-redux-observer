@@ -1,13 +1,13 @@
-const querystring = require('querystring')
-const axios = require('axios')
-const redirectURI = require('../constants')
+import querystring from 'querystring'
+import axios from 'axios'
+import {constants} from '../constants'
 
 class AuthService {
 
   static getGoogleAuthURL() {
     const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
     const options = {
-      redirect_uri: `${process.env.SERVER_ROOT_URI}/${redirectURI}`,
+      redirect_uri: `${process.env.SERVER_ROOT_URI}/${constants.redirectURI}`,
       client_id: process.env.GOOGLE_CLIENT_ID,
       access_type: "offline",
       response_type: "code",
@@ -22,7 +22,18 @@ class AuthService {
   }
 
 
-  static getTokens({ code, clientId, clientSecret, redirectUri }) {
+  static getTokens({ code, clientId, clientSecret, redirectUri }:{
+    code: string;
+    clientId: string;
+    clientSecret: string;
+    redirectUri: string;
+  }): Promise<{
+    access_token: string;
+    expires_in: Number;
+    refresh_token: string;
+    scope: string;
+    id_token: string;
+  }> {
     /*
      * Uses the code to get tokens
      * that can be used to fetch the user's profile
@@ -35,7 +46,7 @@ class AuthService {
       redirect_uri: redirectUri,
       grant_type: "authorization_code",
     };
-
+    console.log(values,'value')
     return axios
       .post(url, querystring.stringify(values), {
         headers: {
@@ -50,7 +61,8 @@ class AuthService {
   }
 
   // Fetch the user's profile with the access token and bearer
-  static async getGoogleUser(access_token, id_token) {
+  static async getGoogleUser(access_token : string, id_token:string) {
+    console.log(access_token,id_token)
     return await axios.get(
       `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`,
       {
@@ -67,4 +79,4 @@ class AuthService {
   };
 }
 
-module.exports = AuthService
+export default AuthService

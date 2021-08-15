@@ -20,7 +20,7 @@ type fetchUserFulfilledType ={
 
 export const fetchUser  = () => ({
   type : USER_ACTION_TYPES.FETCH_USER
-})
+}) 
 
 const fetchUserFulfilled = (payload : any) => ({ 
   type: USER_ACTION_TYPES.FETCH_USER_FULFILLED,
@@ -29,7 +29,7 @@ const fetchUserFulfilled = (payload : any) => ({
 
 
 export const fetchUserEpic: Epic<Action> = (action$: Observable<Action>, state$:StateObservable<AppState>) => action$.pipe(
-  ofType(USER_ACTION_TYPES.FETCH_USER_FULFILLED),
+  ofType(USER_ACTION_TYPES.FETCH_USER),
   mergeMap(action =>
     ajax({url:'http://localhost:5000/auth/me',withCredentials:true}).pipe(
       map(({response}) => fetchUserFulfilled(response))
