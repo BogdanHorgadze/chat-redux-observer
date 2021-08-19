@@ -1,3 +1,3 @@
 export enum constants {
-  redirectURI = "auth/google"
+  redirectURI = "api/auth/google"
 };

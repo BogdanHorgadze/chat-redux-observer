@@ -7,6 +7,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import jwt from 'jsonwebtoken'
 import {createConnection} from "typeorm";
+// import authRouter from './routes/auth.route'
 const PORT = process.env.PORT || 5000
 const app = express();
 

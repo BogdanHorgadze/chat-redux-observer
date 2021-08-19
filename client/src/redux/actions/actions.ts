@@ -31,7 +31,7 @@ const fetchUserFulfilled = (payload : any) => ({
 export const fetchUserEpic: Epic<Action> = (action$: Observable<Action>, state$:StateObservable<AppState>) => action$.pipe(
   ofType(USER_ACTION_TYPES.FETCH_USER),
   mergeMap(action =>
-    ajax({url:'http://localhost:5000/auth/me',withCredentials:true}).pipe(
+    ajax({url:'http://localhost:5000/api/auth/me',withCredentials:true}).pipe(
       map(({response}) => fetchUserFulfilled(response))
     )
   )
