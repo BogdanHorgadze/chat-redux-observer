@@ -1,0 +1,15 @@
+.entryPage{
+    form {
+        div{
+            margin-bottom: 10px;
+            &:first-child{
+                margin-top: 10px;
+            }
+        }
+        button{
+            &:first-child{
+                margin-bottom: 10px;
+            }
+        }
+    }
+}

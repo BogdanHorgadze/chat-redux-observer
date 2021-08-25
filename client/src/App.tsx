@@ -20,7 +20,6 @@ function App() {
       <Switch>
         <Route path="/" component={EntryPage}/>
       </Switch>
-     
     </div>
   );
 }
