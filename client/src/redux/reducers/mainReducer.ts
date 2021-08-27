@@ -5,7 +5,7 @@ export type todo = {
   value : string
 }
 
-interface IMain {
+export interface IMain {
   todos : Array<todo>
   user : any
 }

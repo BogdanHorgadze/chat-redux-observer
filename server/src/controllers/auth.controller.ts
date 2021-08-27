@@ -62,6 +62,7 @@ async function authControllerRegistration(req: Request, res: Response) {
 
 async function authControllerLogin(req: Request, res: Response) {
   try {
+    console.log(req.body)
     const { email, password } = req.body
     const userRepository = getRepository(User);
     const isUser = await userRepository.findOne({ where: { email, password } });

@@ -7,12 +7,12 @@ import { Switch, Route, Redirect} from 'react-router-dom'
 import EntryPage from "./Containers/entryPage/EntryPage";
 
 function App() {
-  const dispatch = useDispatch()
-  const me = useSelector((state: AppState) => state.mainReducer.user)
+  // const dispatch = useDispatch()
+  // const me = useSelector((state: AppState) => state.mainReducer.user)
 
-  useEffect(() => {
-    dispatch(fetchUser())
-  }, [])
+  // useEffect(() => {
+  //   dispatch(fetchUser())
+  // }, [])
 
 
   return (
