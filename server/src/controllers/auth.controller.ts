@@ -53,7 +53,7 @@ async function authControllerRegistration(req: Request, res: Response) {
       await userRepository.save(user);
       res.send({ message: "registrated" });
     } else {
-      res.json({ message: "email is existing" })
+      res.json({ message: "unknown error" })
     }
   } catch (e) {
     console.log(e)
@@ -70,7 +70,7 @@ async function authControllerLogin(req: Request, res: Response) {
       const token = jwt.sign({ email }, process.env.JWT_SECRET as string)
       res.json({ token })
     } else {
-      res.json({error:"user does not exist"})
+      res.json({message:"user does not exist"})
     }
   } catch (e) {
     console.log(e)

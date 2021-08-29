@@ -1,10 +1,9 @@
 import React from 'react'
-import { FormControl, InputLabel, Input, FormHelperText, Box, Button } from '@material-ui/core';
+import { FormControl, InputLabel, Input, FormHelperText, Box, Button, Grid, makeStyles } from '@material-ui/core';
 import Layout from '../../components/Layout/Layout'
 import { useForm, SubmitHandler } from "react-hook-form";
 import Icon from '@material-ui/core/Icon';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import classes from './EntryPage.module.scss'
 import axios from 'axios'
 import { NavLink, useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,11 +15,27 @@ type Inputs = {
     password: string,
 };
 
+const useStyles = makeStyles((theme) => ({
+    EntryPage: {
+        height: "60vh"
+    },
+    buttons: {
+        marginTop: "10px",
+        marginRight: '5px'
+    },
+    inputs : {
+        padding:"5px",
+        marginTop:"5px"
+    }
+}));
+
 const EntryPage: React.FC = () => {
     const history = useHistory()
     const dispatch = useDispatch()
-    const user = useSelector((state : AppState) => state.mainReducer.user)
+    const user = useSelector((state: AppState) => state.mainReducer.user)
+    const message = useSelector((state: AppState) => state.mainReducer.message)
     const { register, getValues, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
+    const classes = useStyles();
 
     const onSubmit: SubmitHandler<Inputs> = data => {
         const { email, password } = data
@@ -36,48 +51,50 @@ const EntryPage: React.FC = () => {
         const email = getValues('email')
         const password = getValues('password')
 
-        dispatch(loginUser({email,password}))
+        dispatch(loginUser({ email, password }))
     }
 
     return (
-        <div className={classes.entryPage}>
-            <Layout width={200}>
-                <h1>{user}</h1>
-                <Box>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <Box component="div">
-                            <Input placeholder="login" {...register("email")} inputProps={{ 'aria-label': 'description' }} />
-                        </Box>
-                        <Box component="div">
-                            <Input placeholder="password" {...register("password")} id="my-input" inputProps={{ 'aria-label': 'description' }} />
-                        </Box>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            endIcon={<CloudUploadIcon />}
-                            type="submit"
-                            onClick={loginHandler}
-                        >
-                            login
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                        >
-                            register
-                        </Button>
+        <Grid container justifyContent="center" alignItems="center" className={classes.EntryPage}>
+            <Box>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <Box component="div">
+                        <Input className={classes.inputs} placeholder="login" {...register("email")} inputProps={{ 'aria-label': 'description' }} />
+                    </Box>
+                    <Box component="div">
+                        <Input className={classes.inputs} placeholder="password" {...register("password")} id="my-input" inputProps={{ 'aria-label': 'description' }} />
+                    </Box>
+                    <h1>{message}</h1>
+                    <Button
+                        className={classes.buttons}
+                        variant="contained"
+                        color="primary"
+                        endIcon={<CloudUploadIcon />}
+                        type="submit"
+                        onClick={loginHandler}
+                    >
+                        login
+                    </Button>
+                    <Button
+                        className={classes.buttons}
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                    >
+                        register
+                    </Button>
+                    <Grid component="div" className={classes.buttons}>
                         <Button
                             variant="contained"
                             color="primary"
                             onClick={redirectGoogleAuth}
                         >
-                                Sign up
+                            Sign up
                         </Button>
-                    </form>
-                </Box>
-            </Layout>
-        </div>
+                    </Grid>
+                </form>
+            </Box>
+        </Grid>
     )
 }
 

@@ -24,6 +24,7 @@ export const loginUser = (payload: any) => ({
   payload
 })
 
+
 interface Action<T = any, P = any> {
   type: T
   payload?: P

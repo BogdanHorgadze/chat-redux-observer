@@ -8,17 +8,19 @@ export type todo = {
 export interface IMain {
   todos : Array<todo>
   user : any
+  message : string
 }
 
 const initialState : IMain = {
   todos : [],
-  user : '' 
+  user : '' ,
+  message : ''
 }
 
 export default function mainReducer(state: IMain = initialState, action: ActionsTypes) {
   switch (action.type) {
       case USER_ACTION_TYPES.FETCH_USER_FULFILLED:
-        return {...state, user : action.payload}
+        return {...state, user : action.payload, message : action.payload.error}
       break;
     default:
       return state;
