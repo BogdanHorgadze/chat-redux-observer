@@ -1,4 +1,4 @@
-import { mapTo, map, delay, filter } from 'rxjs/operators';
+import { mapTo, map, delay, filter, tap } from 'rxjs/operators';
 import { Epic, ofType, StateObservable } from 'redux-observable';
 import { mergeMap, Observable } from 'rxjs';
 import { USER_ACTION_TYPES } from './actionTypes'
@@ -30,16 +30,21 @@ interface Action<T = any, P = any> {
   payload?: P
 }
 
+interface responseLogin {
+  token? : string,
+  message : string
+}
+
 export const loginUserEpic: Epic<ActionsTypes> = (action$: Observable<Action>, state$: StateObservable<AppState>): Observable<Action> => action$.pipe(
   ofType(USER_ACTION_TYPES.LOGIN_USER),
   mergeMap((action) =>
     ajax.post('http://localhost:5000/api/auth/login', action.payload).pipe(
-      map(({ response }) => {
-        console.log(response)
-        return fetchUserFulfilled(response)
-      }
-      )
-    )
+      tap(({ response }:{response : any}) => {
+        if(response.token){
+          localStorage.setItem('token', response.token);
+        }
+      }),
+      map(({ response }) => fetchUserFulfilled(response)))
   )
 );
 

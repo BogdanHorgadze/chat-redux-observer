@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppState } from "./redux/reducers/rootReducer";
 import { Switch, Route, Redirect} from 'react-router-dom'
 import EntryPage from "./Containers/entryPage/EntryPage";
+import ActionPage from "./Containers/actionPage/ActionPage";
+import PrivateRoute from "./components/privateRoute/PrivateRoute";
 
 function App() {
   // const dispatch = useDispatch()
@@ -15,10 +17,12 @@ function App() {
   // }, [])
 
 
+
   return (
     <div className="App">
       <Switch>
-        <Route path="/" component={EntryPage}/>
+        <Route path="/" exact component={EntryPage}/>
+        <PrivateRoute location='/' path="/actionPage" component={ActionPage}/>
       </Switch>
     </div>
   );

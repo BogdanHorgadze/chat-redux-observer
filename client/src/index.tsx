@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import logger from 'redux-logger';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux'
 import { createEpicMiddleware } from 'redux-observable';
@@ -10,7 +11,7 @@ import { rootEpic, rootReducer } from './redux/reducers/rootReducer';
 import { BrowserRouter } from 'react-router-dom'
 const epicMiddleware = createEpicMiddleware();
 
-const store = createStore(rootReducer, applyMiddleware(epicMiddleware))
+const store = createStore(rootReducer, applyMiddleware(epicMiddleware,logger))
 
 epicMiddleware.run(rootEpic);
 

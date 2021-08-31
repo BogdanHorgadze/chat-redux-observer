@@ -20,7 +20,7 @@ const initialState : IMain = {
 export default function mainReducer(state: IMain = initialState, action: ActionsTypes) {
   switch (action.type) {
       case USER_ACTION_TYPES.FETCH_USER_FULFILLED:
-        return {...state, user : action.payload, message : action.payload.error}
+        return {...state, user : action.payload, message : action.payload.message}
       break;
     default:
       return state;

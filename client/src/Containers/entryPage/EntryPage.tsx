@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FormControl, InputLabel, Input, FormHelperText, Box, Button, Grid, makeStyles } from '@material-ui/core';
 import Layout from '../../components/Layout/Layout'
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -53,6 +53,20 @@ const EntryPage: React.FC = () => {
 
         dispatch(loginUser({ email, password }))
     }
+
+    useEffect(() => {
+        // function getCookie(name : string) {
+        //     const value = `; ${document.cookie}`;
+        //     const parts:any = value.split(`; ${name}=`);
+        //     if (parts.length === 2) return parts.pop().split(';').shift();
+        //   }
+
+        // console.log(getCookie('auth_token'))
+        const token = localStorage.getItem('token')
+        if(token){
+            history.push('/actionPage')
+        }
+    }, [localStorage.getItem('token')])
 
     return (
         <Grid container justifyContent="center" alignItems="center" className={classes.EntryPage}>

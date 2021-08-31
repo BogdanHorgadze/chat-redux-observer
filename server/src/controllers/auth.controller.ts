@@ -24,11 +24,13 @@ async function authControllerSetUserToken(req: Request, res: Response) {
 
   const token = jwt.sign(googleUser, process.env.JWT_SECRET as string);
 
+  
   res.cookie(process.env.COOKIE_NAME as string, token, {
     maxAge: 900000,
-    httpOnly: true,
+    httpOnly: false,
     secure: false,
   });
+
 
   res.redirect(process.env.UI_ROOT_URI as string);
 }
