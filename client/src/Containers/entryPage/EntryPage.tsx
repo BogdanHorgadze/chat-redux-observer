@@ -7,13 +7,20 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import axios from 'axios'
 import { NavLink, useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUser, loginUser } from '../../redux/actions/actions';
+import { fetchUser, loginUser, registerUser } from '../../redux/actions/actions';
 import { AppState } from '../../redux/reducers/rootReducer';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from "yup";
 
 type Inputs = {
     email: string,
     password: string,
 };
+
+const schema = yup.object().shape({
+    email: yup.string().email('must be a valid email').required('email is required'),
+    password: yup.string().min(3).max(12).required('password is required')
+});
 
 const useStyles = makeStyles((theme) => ({
     EntryPage: {
@@ -23,9 +30,9 @@ const useStyles = makeStyles((theme) => ({
         marginTop: "10px",
         marginRight: '5px'
     },
-    inputs : {
-        padding:"5px",
-        marginTop:"5px"
+    inputs: {
+        padding: "5px",
+        marginTop: "5px"
     }
 }));
 
@@ -34,13 +41,10 @@ const EntryPage: React.FC = () => {
     const dispatch = useDispatch()
     const user = useSelector((state: AppState) => state.mainReducer.user)
     const message = useSelector((state: AppState) => state.mainReducer.message)
-    const { register, getValues, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
+    const { register, getValues, handleSubmit, watch, formState: { errors } } = useForm<Inputs>({
+        resolver: yupResolver(schema)
+    });
     const classes = useStyles();
-
-    const onSubmit: SubmitHandler<Inputs> = data => {
-        const { email, password } = data
-
-    };
 
     const redirectGoogleAuth = async () => {
         const { data } = await axios.get('http://localhost:5000/api/auth/google/url');
@@ -54,6 +58,13 @@ const EntryPage: React.FC = () => {
         dispatch(loginUser({ email, password }))
     }
 
+    const registerHandler = () => {
+        const email = getValues('email')
+        const password = getValues('password')
+
+        dispatch(registerUser({ email, password }))
+    }
+
     useEffect(() => {
         // function getCookie(name : string) {
         //     const value = `; ${document.cookie}`;
@@ -63,7 +74,7 @@ const EntryPage: React.FC = () => {
 
         // console.log(getCookie('auth_token'))
         const token = localStorage.getItem('token')
-        if(token){
+        if (token) {
             history.push('/actionPage')
         }
     }, [localStorage.getItem('token')])
@@ -71,7 +82,7 @@ const EntryPage: React.FC = () => {
     return (
         <Grid container justifyContent="center" alignItems="center" className={classes.EntryPage}>
             <Box>
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form onSubmit={e => e?.preventDefault()}>
                     <Box component="div">
                         <Input className={classes.inputs} placeholder="login" {...register("email")} inputProps={{ 'aria-label': 'description' }} />
                     </Box>
@@ -79,13 +90,14 @@ const EntryPage: React.FC = () => {
                         <Input className={classes.inputs} placeholder="password" {...register("password")} id="my-input" inputProps={{ 'aria-label': 'description' }} />
                     </Box>
                     <h1>{message}</h1>
+                    <p>{errors.email?.message || errors.password?.message}</p>
                     <Button
                         className={classes.buttons}
                         variant="contained"
                         color="primary"
                         endIcon={<CloudUploadIcon />}
                         type="submit"
-                        onClick={loginHandler}
+                        onClick={handleSubmit(loginHandler)}
                     >
                         login
                     </Button>
@@ -94,6 +106,7 @@ const EntryPage: React.FC = () => {
                         variant="contained"
                         color="primary"
                         type="submit"
+                        onClick={handleSubmit(registerHandler)}
                     >
                         register
                     </Button>

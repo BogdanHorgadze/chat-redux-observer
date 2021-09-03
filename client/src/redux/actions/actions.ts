@@ -24,6 +24,11 @@ export const loginUser = (payload: any) => ({
   payload
 })
 
+export const registerUser = (payload: any) => ({
+  type: inferLiteralFromString(USER_ACTION_TYPES.REGISTER_USER),
+  payload
+})
+
 
 interface Action<T = any, P = any> {
   type: T
@@ -34,6 +39,16 @@ interface responseLogin {
   token? : string,
   message : string
 }
+
+export const registerUserEpic: Epic<ActionsTypes> = (action$: Observable<Action>, state$: StateObservable<AppState>): Observable<Action> => action$.pipe(
+  ofType(USER_ACTION_TYPES.REGISTER_USER),
+  mergeMap((action) => {
+    return ajax.post('http://localhost:5000/api/auth/register', action.payload).pipe(
+      tap((res) => {
+        console.log(res);
+      }),
+      map(({ response }) => fetchUserFulfilled(response)));
+     }));
 
 export const loginUserEpic: Epic<ActionsTypes> = (action$: Observable<Action>, state$: StateObservable<AppState>): Observable<Action> => action$.pipe(
   ofType(USER_ACTION_TYPES.LOGIN_USER),
