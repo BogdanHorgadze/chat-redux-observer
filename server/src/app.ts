@@ -6,8 +6,8 @@ import WebSocket from "ws";
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import jwt from 'jsonwebtoken'
-import {createConnection} from "typeorm";
-// import authRouter from './routes/auth.route'
+import { createConnection } from "typeorm";
+import authRouter from './routes/auth.route'
 const PORT = process.env.PORT || 5000
 const app = express();
 
@@ -22,33 +22,86 @@ app.use(
 );
 
 app.use(cookieParser());
-app.use('/api/auth', require('./routes/auth.route'))
+app.use('/api/auth', authRouter)
 
 const webSocketServer = new WebSocket.Server({
    server,
    verifyClient: function ({ req }, done) {
       let token = req.headers.authorization
-      if(token){
-         jwt.verify(token, process.env.JWT_SECRET as string, function (err, decoded) {
-            if (err) return done(false, 403, 'Not valid token');
-   
-            done(true);
-         });
-      }
+
+      jwt.verify(token as string, process.env.JWT_SECRET as string, function (err, decoded) {
+         if (err) return done(false, 401, 'Not valid token');
+
+         done(true);
+      });
+
    }
 });
 
-webSocketServer.on('connection', ws => {
-   ws.on('message', m => {
-      
+type room = {
+   password?: any
+   [key: string]: WebSocket
+}
+
+interface Rooms {
+   [key: string]: room
+}
+
+const rooms: Rooms = {};
+
+webSocketServer.on("connection", socket => {
+   const uuid = String(Date.now()); // create here a uuid for this connection
+   const leave = (room: string) => {
+      // not present: do nothing
+      if (!rooms[room][uuid]) return;
+
+      // if the one exiting is the last one, destroy the room
+      if (Object.keys(rooms[room]).length === 1) delete rooms[room];
+      // otherwise simply leave the room
+      else delete rooms[room][uuid];
+   };
+
+   socket.on("message", data => {
+      const { message, meta, room, password } = JSON.parse(data as string);
+      switch (meta) {
+         case 'join':
+            if (!rooms[room]) {
+               rooms[room] = password ? { password } : {}; // create the room
+            }
+            if (!rooms[room][uuid]) {
+               if (rooms[room].password === password) {
+                  rooms[room][uuid] = socket; // join the room
+               } else if (!rooms[room].password) {
+                  rooms[room][uuid] = socket; // join the room
+               } else {
+                  socket.send('password not a correct')
+               }
+            }
+            break
+         case 'showRooms':
+            socket.send(rooms)
+            break
+         case 'leave':
+            leave(room);
+            break
+         default:
+            const info = JSON.stringify(message)
+            Object.entries(rooms[room]).forEach(([, sock]) => sock.send(info));
+            break
+      }
+      console.log(rooms)
    });
 
-   ws.on("error", e => ws.send(e));
-
-   ws.send('Hi there, I am a WebSocket server');
+   socket.on("close", () => {
+      // for each room, remove the closed socket
+      Object.keys(rooms).forEach(room => leave(room));
+   });
 });
 
-async function start (){
+
+
+
+async function start() {
    const connection = await createConnection();
 }
 
