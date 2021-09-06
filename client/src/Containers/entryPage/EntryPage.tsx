@@ -66,16 +66,9 @@ const EntryPage: React.FC = () => {
     }
 
     useEffect(() => {
-        // function getCookie(name : string) {
-        //     const value = `; ${document.cookie}`;
-        //     const parts:any = value.split(`; ${name}=`);
-        //     if (parts.length === 2) return parts.pop().split(';').shift();
-        //   }
-
-        // console.log(getCookie('auth_token'))
         const token = localStorage.getItem('token')
         if (token) {
-            history.push('/actionPage')
+            history.push('/action')
         }
     }, [localStorage.getItem('token')])
 

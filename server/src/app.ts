@@ -26,23 +26,26 @@ app.use('/api/auth', authRouter)
 
 const webSocketServer = new WebSocket.Server({
    server,
-   verifyClient: function ({ req }, done) {
-      let token = req.headers.authorization
+   // verifyClient: function ({ req }, done) {
+   //    let token = req.headers.authorization
 
-      jwt.verify(token as string, process.env.JWT_SECRET as string, function (err, decoded) {
-         if (err) return done(false, 401, 'Not valid token');
+   //    jwt.verify(token as string, process.env.JWT_SECRET as string, function (err, decoded) {
+   //       if (err) return done(false, 401, 'Not valid token');
 
-         done(true);
-      });
+   //       done(true);
+   //    });
 
-   }
+   // }
 });
 
-type room = {
-   password?: any
+type usersType = {
    [key: string]: WebSocket
 }
 
+type room = {
+   password?: any
+   users?: [usersType] | []
+}
 interface Rooms {
    [key: string]: room
 }
@@ -52,41 +55,63 @@ const rooms: Rooms = {};
 webSocketServer.on("connection", socket => {
    const uuid = String(Date.now()); // create here a uuid for this connection
    const leave = (room: string) => {
+
+      const users = rooms[room]?.users
       // not present: do nothing
-      if (!rooms[room][uuid]) return;
+
+      users?.forEach(user => {
+         if (!user[uuid]) return;
+      });
 
       // if the one exiting is the last one, destroy the room
-      if (Object.keys(rooms[room]).length === 1) delete rooms[room];
-      // otherwise simply leave the room
-      else delete rooms[room][uuid];
+      if (users?.length === 1) {
+         delete rooms[room]
+      } else {
+         // otherwise simply leave the room
+         const leaver = users?.findIndex((user) => user[uuid])
+         if (leaver) {
+            users?.splice(leaver, 1)
+         }
+      }
    };
 
    socket.on("message", data => {
       const { message, meta, room, password } = JSON.parse(data as string);
+      const users = rooms[room]?.users
       switch (meta) {
          case 'join':
             if (!rooms[room]) {
-               rooms[room] = password ? { password } : {}; // create the room
+               rooms[room] = password ? { password, users: [{[uuid]:socket}] } : { users: [{[uuid]:socket}] }; // create the room
+               webSocketServer.clients.forEach((client) => {
+                  client.send(JSON.stringify(rooms))
+               })
             }
-            if (!rooms[room][uuid]) {
-               if (rooms[room].password === password) {
-                  rooms[room][uuid] = socket; // join the room
-               } else if (!rooms[room].password) {
-                  rooms[room][uuid] = socket; // join the room
-               } else {
-                  socket.send('password not a correct')
+            users?.forEach(user => {
+               if (users.length !== 0) {
+                  if (!user[uuid]) {
+                     if (rooms[room].password === password) {
+                        console.log(users)
+                        users.push({ [uuid]: socket }); // join the room
+                     } else if (!rooms[room].password) {
+                        users.push({ [uuid]: socket }); // join the room
+                     } else {
+                        socket.send('password not a correct')
+                     }
+                  }
                }
-            }
+            })
             break
          case 'showRooms':
-            socket.send(rooms)
+            socket.send(JSON.stringify(rooms))
             break
          case 'leave':
             leave(room);
             break
          default:
             const info = JSON.stringify(message)
-            Object.entries(rooms[room]).forEach(([, sock]) => sock.send(info));
+            rooms[room].users?.forEach(user => {
+               user[Object.keys(user)[0]].send(info)
+            })
             break
       }
       console.log(rooms)
