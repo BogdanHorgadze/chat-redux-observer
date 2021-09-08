@@ -70,21 +70,11 @@ webSocketServer.on("connection", socket => {
          // otherwise simply leave the room
          delete users[uuid]
       }
-      console.log(id)
-      if(id){
-         console.log(updateUsers,1)
-         updateUsers.forEach((socket,i) => {
-            if(Object.keys(socket)[0] === id){
-               updateUsers.splice(i,0)
-               console.log(updateUsers,2)
-            }
-         })
-      }
    };
 
    const updateUsersHandler = () => {
       if (updateUsers.length) {
-         updateUsers?.forEach(socket => {
+         updateUsers.forEach(socket => {
             socket[Object.keys(socket)[0]].send(JSON.stringify(rooms))
          })
       }
@@ -117,7 +107,7 @@ webSocketServer.on("connection", socket => {
             socket.send(JSON.stringify(rooms))
             break
          case 'leave':
-            leave(room, uuid);
+            leave(room);
             break
          default:
             // send the message to all in the room
@@ -125,13 +115,17 @@ webSocketServer.on("connection", socket => {
             Object.entries(rooms[room].users).forEach(([, sock]) => sock.send(info))
             break
       }
-      // console.log(rooms)
    });
 
    socket.on("close", () => {
       // for each room, remove the closed socket
-      Object.keys(rooms).forEach(room => leave(room,uuid));
-      // console.log(rooms)
+      Object.keys(rooms).forEach(room => leave(room));
+
+      updateUsers.forEach((socket, i) => {
+         if (Object.keys(socket)[0] === uuid) {
+            updateUsers.splice(i, 1)
+         }
+      })
    });
 });
 
@@ -146,6 +140,3 @@ start()
 
 server.listen(PORT, () => console.log(`Server started on ${PORT}`))
 
-function id(room: any, id: any) {
-   throw new Error("Function not implemented.");
-}
