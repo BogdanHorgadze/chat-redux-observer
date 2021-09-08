@@ -1,9 +1,22 @@
-import React, { useEffect, useRef } from 'react'
+import React, { ReactElement, useEffect, useRef, useState } from 'react'
+import { Table, TableBody, TableRow, TableCell } from '@material-ui/core';
 
+type usersType = {
+    [key: string]: WebSocket
+}
+
+type room = {
+    password?: any
+    users: usersType
+}
+interface Rooms {
+    [key: string]: room
+}
 
 const RoomsPage: React.FC = () => {
 
     const socket = useRef<WebSocket>()
+    const [rooms, setRooms] = useState<Rooms>({})
 
     useEffect(() => {
         connect()
@@ -20,7 +33,7 @@ const RoomsPage: React.FC = () => {
         }
         socket.current.onmessage = (event) => {
             const message = JSON.parse(event.data)
-            console.log(message)
+            setRooms(message)
         }
         socket.current.onclose = () => {
             console.log('Socket закрыт')
@@ -30,9 +43,44 @@ const RoomsPage: React.FC = () => {
         }
     }
 
+    const renderRooms = (): any => {
+        if (Object.keys(rooms).length) {
+            return Object.keys(rooms).map((room,i) => {
+                return (
+                    <TableRow key={room + i}>
+                        <TableCell>
+                            {room}
+                        </TableCell>
+                        <TableCell>
+                            {Object.keys(rooms[room].users).length}
+                        </TableCell>
+                        <TableCell>
+                            {rooms[room].password ? 'close' : 'open'}
+                        </TableCell>
+                    </TableRow>
+                )
+            })
+        }
+    }
+
     return (
         <div>
-            asda
+            <Table>
+                <TableBody>
+                    <TableRow>
+                        <TableCell>
+                            Room
+                        </TableCell>
+                        <TableCell>
+                            users
+                        </TableCell>
+                        <TableCell>
+                            type
+                        </TableCell>
+                    </TableRow>
+                    {renderRooms()}
+                </TableBody>
+            </Table>
         </div>
     )
 }
