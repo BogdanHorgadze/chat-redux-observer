@@ -20,7 +20,7 @@ function ActionPage() {
                 create room
             </Box>
             <Box className={classes.actions}>
-                join in existing room
+                join to existing room
             </Box>
             <Box className={classes.actions}>
                 <NavLink to="/rooms">find room</NavLink>

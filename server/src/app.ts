@@ -120,6 +120,7 @@ webSocketServer.on("connection", socket => {
    socket.on("close", () => {
       // for each room, remove the closed socket
       Object.keys(rooms).forEach(room => leave(room));
+      updateUsersHandler()
 
       updateUsers.forEach((socket, i) => {
          if (Object.keys(socket)[0] === uuid) {
