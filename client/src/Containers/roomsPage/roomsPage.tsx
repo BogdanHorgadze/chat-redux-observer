@@ -1,5 +1,7 @@
 import React, { ReactElement, useEffect, useRef, useState } from 'react'
 import { Table, TableBody, TableRow, TableCell } from '@material-ui/core';
+import { useHistory } from 'react-router-dom'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 type usersType = {
     [key: string]: WebSocket
@@ -14,12 +16,13 @@ interface Rooms {
 }
 
 const RoomsPage: React.FC = () => {
-
     const socket = useRef<WebSocket>()
     const [rooms, setRooms] = useState<Rooms>({})
+    const history = useHistory()
 
     useEffect(() => {
         connect()
+        return () => socket.current?.close()
     }, [])
 
     const connect = () => {
@@ -43,9 +46,13 @@ const RoomsPage: React.FC = () => {
         }
     }
 
+    const goBackHandler = () => {
+        history.goBack()
+    }
+
     const renderRooms = (): any => {
         if (Object.keys(rooms).length) {
-            return Object.keys(rooms).map((room,i) => {
+            return Object.keys(rooms).map((room, i) => {
                 return (
                     <TableRow key={room + i}>
                         <TableCell>
@@ -65,6 +72,9 @@ const RoomsPage: React.FC = () => {
 
     return (
         <div>
+            <div onClick={goBackHandler}>
+                <ArrowBackIcon />
+            </div>
             <Table>
                 <TableBody>
                     <TableRow>
