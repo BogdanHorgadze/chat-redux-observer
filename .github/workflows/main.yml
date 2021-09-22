@@ -8,19 +8,20 @@ on:
       - development
 
 jobs:
-  test:
-    name: Running Units Tests
+  install_project:
+    name: install
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
     - name: Install
       working-directory: ./client
       run: npm install
+  run_tests:
+    name: run unit tests
+    runs-on: ubuntu-latest
+    needs: [install_project]
+    
+    steps:
     - name: Test
       working-directory: ./client
       run: npm test
