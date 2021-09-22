@@ -8,7 +8,7 @@ on:
       - development
 
 jobs:
-  install_project:
+  testing:
     name: run unit test
     runs-on: ubuntu-latest
 
